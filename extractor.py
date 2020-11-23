@@ -80,3 +80,25 @@ class YubbExtractor:
             indicators_dict[stock] = cls.get_stock_indicators(stock)
         
         return indicators_dict
+
+    @classmethod
+    def get_tickers_from_page(cls, page_number: int) -> List[str]:
+        ''' Returns a list with stock tickers from Yubb collection's page with page_number index '''
+        page = requests.get(f'https://yubb.com.br/investimentos/acoes?collection_page={page_number}&sort_by=ticker')
+        soup = BeautifulSoup(page.content, 'html.parser')
+        header_divs = soup.select('div.header__title.header__title--column.investmentCard__row')
+        tickers = []
+        for div in header_divs:
+            stock_title = div.h3.text
+            ticker = stock_title.split(' ')[0]
+            tickers.append(ticker)
+        return tickers
+
+    @classmethod
+    def get_all_tickets(cls) -> List[str]:
+        ''' Returns a list with all tickers from Yubb collection's pages. It scrapes up until 30 collection's pages by now. '''
+        all_tickers = []
+        for i in range(1,30):
+            tickers = cls.get_tickers_from_page(i)
+            all_tickers = all_tickers + tickers
+        return all_tickers
