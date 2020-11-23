@@ -24,8 +24,7 @@ class Analyser:
 
     @classmethod
     def get_dataframe_indicators_for_stocks(cls, stocks: List[str]) -> pd.DataFrame:
-        Extractor = YubbExtractor()
-        indicators_dict = Extractor.get_indicators_from_stocks(stocks)
+        indicators_dict = YubbExtractor.get_indicators_from_stocks(stocks)
 
         data_frame = cls.create_dataframe_dict_from_indicators_dict(indicators_dict)
 

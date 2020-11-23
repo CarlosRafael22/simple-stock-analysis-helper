@@ -8,8 +8,7 @@ def stocks_list():
 @pytest.fixture
 def indicators_dict(stocks_list):
     from extractor import YubbExtractor
-    Extractor = YubbExtractor()
-    indicators_dict = Extractor.get_indicators_from_stocks(stocks_list)
+    indicators_dict = YubbExtractor.get_indicators_from_stocks(stocks_list)
     return indicators_dict
 
 class TestAnalyser:

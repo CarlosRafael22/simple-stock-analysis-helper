@@ -7,8 +7,8 @@ IndicatorTupleList = List[Tuple[str, str]]
 StockIndicatorsDict = Dict[str, List[Tuple[str, str]]]
 
 class YubbExtractor:
-
-    def reorder_tuple_list_with_first_element_as(self, tuple_key: str, tuple_list: IndicatorTupleList) -> IndicatorTupleList:
+    @staticmethod
+    def reorder_tuple_list_with_first_element_as(tuple_key: str, tuple_list: IndicatorTupleList) -> IndicatorTupleList:
         ''' Order the list with tuples setting the first element of this list as the tuple_key tuple and all the elements before it put in the last positions '''
         keys = [elem[0] for elem in tuple_list]
         try:
@@ -19,16 +19,16 @@ class YubbExtractor:
         first_list = tuple_list[tuple_key_position:]
         return first_list + before_threshold_list
 
-
-    def get_main_indicators_from_page(self, soup: BeautifulSoup) -> IndicatorTupleList:
+    @classmethod
+    def get_main_indicators_from_page(cls, soup: BeautifulSoup) -> IndicatorTupleList:
         indicators = soup.find_all('div', class_='card investmentDetails__card')
         indicator_tuples = [(indicator.find('dt', class_='investmentDetails__label').get_text(), indicator.find('dd', class_='investmentDetails__value').get_text()) for indicator in indicators]
         # Reorder elements for the most important items be first
-        ordered_indicator_tuples = self.reorder_tuple_list_with_first_element_as('Dividend Yield', indicator_tuples)
+        ordered_indicator_tuples = cls.reorder_tuple_list_with_first_element_as('Dividend Yield', indicator_tuples)
         return ordered_indicator_tuples
 
-
-    def get_stock_summaries_from_page(self, soup: BeautifulSoup) -> IndicatorTupleList:
+    @classmethod
+    def get_stock_summaries_from_page(cls, soup: BeautifulSoup) -> IndicatorTupleList:
         summary_infos = soup.find_all('div', class_='investmentSummary__label')
         summary_infos = [info.get_text() for info in summary_infos]
 
@@ -40,43 +40,43 @@ class YubbExtractor:
         stock_summaries = list(ziped_summary)
         return stock_summaries
 
-
-    def get_stock_name_tuple(self, soup: BeautifulSoup) -> Tuple[str, str]:
+    @classmethod
+    def get_stock_name_tuple(cls, soup: BeautifulSoup) -> Tuple[str, str]:
         h1_name = soup.find('h1', class_='investmentPageHeader__title')
         stock_name = h1_name.get_text() if h1_name else None
         print('Nome - ', stock_name)
         name_tuple = ('Ação', stock_name)
         return name_tuple
 
-
-    def get_stock_section_info(self, soup: BeautifulSoup) -> Tuple[str, str]:
+    @classmethod
+    def get_stock_section_info(cls, soup: BeautifulSoup) -> Tuple[str, str]:
         cards = soup.select('div.card.shadow-sm')
         # import pdb
         # pdb.set_trace()
         section_info = [(card.dt.text, card.dd.text) for card in cards]
         return section_info
 
-
-    def get_stock_indicators(self, stock_name: str) -> IndicatorTupleList:
+    @classmethod
+    def get_stock_indicators(cls, stock_name: str) -> IndicatorTupleList:
         print('Vai pegar da acao: ', stock_name)
         page = requests.get(f'https://yubb.com.br/investimentos/acoes/{stock_name}')
         soup = BeautifulSoup(page.content, 'html.parser')
 
-        indicator_tuples = self.get_main_indicators_from_page(soup)
-        stock_summaries = self.get_stock_summaries_from_page(soup)
-        name_tuple = self.get_stock_name_tuple(soup)
+        indicator_tuples = cls.get_main_indicators_from_page(soup)
+        stock_summaries = cls.get_stock_summaries_from_page(soup)
+        name_tuple = cls.get_stock_name_tuple(soup)
         # section_info = get_stock_section_info(soup)
         print('A tupla - ', name_tuple)
 
         stock_indicators = [name_tuple] + stock_summaries + indicator_tuples
         return stock_indicators
 
-
-    def get_indicators_from_stocks(self, stocks: List[str]) -> StockIndicatorsDict:
+    @classmethod
+    def get_indicators_from_stocks(cls, stocks: List[str]) -> StockIndicatorsDict:
         ''' Returns a dictionary with each key being the stock name and its value is a list containing all indicators tuple extracted from YUBB page '''
         indicators_dict = {}
         for stock in stocks:
             print('Indicadores para -> ', stock)
-            indicators_dict[stock] = self.get_stock_indicators(stock)
+            indicators_dict[stock] = cls.get_stock_indicators(stock)
         
         return indicators_dict
