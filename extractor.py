@@ -95,10 +95,34 @@ class YubbExtractor:
         return tickers
 
     @classmethod
-    def get_all_tickets(cls) -> List[str]:
+    def get_all_tickers(cls) -> List[str]:
         ''' Returns a list with all tickers from Yubb collection's pages. It scrapes up until 30 collection's pages by now. '''
         all_tickers = []
         for i in range(1,30):
             tickers = cls.get_tickers_from_page(i)
             all_tickers = all_tickers + tickers
         return all_tickers
+
+    @staticmethod
+    def save_list_to_file(tickers_list: List[str], filename: str) -> None:
+        with open(filename, "w") as output:
+            for item in tickers_list:
+                output.write(f'{item}\n')
+
+    @staticmethod
+    def get_list_from_file(filename: str) -> List[str]:
+        import os.path
+        file_exists = os.path.exists(filename)
+
+        if file_exists:
+            tickers_list = []
+            try:
+                with open(filename, "r") as file:
+                    for line in file:
+                        ticker = line.replace('\n', '')
+                        tickers_list.append(ticker)
+            except Exception as excp:
+                raise excp
+        else:
+            raise Exception('File does not exist')
+        return tickers_list
