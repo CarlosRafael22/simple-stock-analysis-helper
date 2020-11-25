@@ -44,6 +44,6 @@ class TestYubbExtractor:
         YubbExtractor.save_list_to_file(tickers_list, filename)
         assert os.path.exists(filename)
 
-    def test_should_get_list_from_file(self, tickers_list):
-        returned_tickers_list = YubbExtractor.get_list_from_file('tickers.txt')
+    def test_should_get_tickers_list_from_file(self, tickers_list):
+        returned_tickers_list = YubbExtractor.get_tickers_list_from_file('tickers.txt')
         assert returned_tickers_list == tickers_list
