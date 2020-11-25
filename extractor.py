@@ -110,7 +110,7 @@ class YubbExtractor:
                 output.write(f'{item}\n')
 
     @staticmethod
-    def get_list_from_file(filename: str) -> List[str]:
+    def get_tickers_list_from_file(filename: str) -> List[str]:
         import os.path
         file_exists = os.path.exists(filename)
 
